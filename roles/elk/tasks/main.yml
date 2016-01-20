@@ -42,6 +42,7 @@
     - ansible.conf
     - compass.conf
     - messages.conf
+    - beat.conf
 
 - name: create logstash patterns directory
   file: path=/opt/logstash/patterns state=directory

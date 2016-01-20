@@ -1,6 +1,11 @@
 ---
 
-- hosts: all
+- hosts: compass
   sudo: True
   roles:
     - elk
+
+- hosts: beats
+  sudo: True
+  roles:
+    - filebeat
