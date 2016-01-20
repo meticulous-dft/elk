@@ -1,0 +1,10 @@
+---
+
+jdk_version: "1.8.0"
+
+# Elasticsearch release and version to install
+es_release: "1.7"
+kibana_release: "4.1"
+logstash_release: "1.5"
+
+

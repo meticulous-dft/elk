@@ -1,0 +1,6 @@
+[logstash-{{ logstash_release }}]
+name=Kibana repository for {{ logstash_release }}.x packages
+baseurl=http://packages.elasticsearch.org/logstash/{{ logstash_release }}/centos
+gpgcheck=1
+gpgkey=http://packages.elasticsearch.org/GPG-KEY-elasticsearch
+enabled=1

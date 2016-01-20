@@ -1,0 +1,71 @@
+---
+- name: Add ElasticSearch repo public signing key
+  rpm_key: key=https://packages.elastic.co/GPG-KEY-elasticsearch state=present
+
+- name: Add ElasticSearch repository
+  template: src=elasticsearch.repo dest=/etc/yum.repos.d/elasticsearch.repo
+
+- name: Add Kibana repository
+  template: src=kibana.repo dest=/etc/yum.repos.d/kibana.repo
+
+- name: Add Logstash repository
+  template: src=logstash.repo dest=/etc/yum.repos.d/logstash.repo
+
+- name: Install OpenJDK
+  sudo: yes
+  yum: name=java-{{ jdk_version }}-openjdk state=present
+
+- name: Install ElasticSearch
+  yum: name=elasticsearch state=present
+
+- name: copy elasticsearch config
+  copy: src=elasticsearch.yml dest=/etc/elasticsearch/elasticsearch.yml
+
+- name: Install Kibana
+  yum: name=kibana state=present
+
+- name: copy kibana config
+  copy: src=kibana.yml dest=/opt/kibana/config/kibana.yml
+
+- name: copy kibana service scripts
+  copy: src=kibana-4.x-init dest=/etc/init.d/kibana mode=0755
+
+- name: copy kibana autostart scripts
+  copy: src=kibana-4.x-default dest=/etc/default/kibana
+
+- name: Install Logstash
+  yum: name=logstash state=present
+
+- name: copy logstash config
+  copy: src={{ item }} dest=/etc/logstash/conf.d/{{ item }}
+  with_items:
+    - ansible.conf
+    - compass.conf
+    - messages.conf
+
+- name: create logstash patterns directory
+  file: path=/opt/logstash/patterns state=directory
+
+- name: copy logstash patten
+  copy: src={{ item }} dest=/opt/logstash/patterns/{{ item }}
+  with_items:
+    - ansible.pat
+
+- name: stop iptables
+  service: name=iptables state=stopped enabled=no
+
+# TODO: currently compass use root user and group, apache has to
+# be in root group to write wsgi logs in /var/log/compass/, need
+# to run compass as its own user in the future.
+# - name: append compass group to apache user groups
+#  user: name=apache groups=root append=yes
+
+- name: start elasticsearch
+  service: name=elasticsearch state=started enabled=yes
+
+- name: start logstash
+  service: name=logstash state=started enabled=yes
+
+- name: start kibana
+  service: name=kibana state=started enabled=yes
+
