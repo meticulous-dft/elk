@@ -1,45 +1,6 @@
 ---
-# `filebeat_config` is templated directly into filebeat.yml for the config.
-# You are expected to override this variable, as these configurations are
-# only suited for development purposes.
-# See https://github.com/elastic/filebeat/blob/master/etc/filebeat.yml for
-# an exhaustive list of configurations.
-filebeat_config:
-  filebeat:
-    prospectors:
-      - paths:
-          - /var/log/*.log
-          - /var/log/nova/nova-api.log
-          - /var/log/nova/nova-conductor.log
-          - /var/log/nova/nova-manage.log
-          - /var/log/nova/nova-scheduler.log
-          - /var/log/nova/nova-spicehtml5proxy.log
-          - /var/log/keystone/keystone-all.log
-          - /var/log/keystone/keystone-manage.log
-          - /var/log/glance/api.log
-          - /var/log/glance/registry.log
-          - /var/log/glance/scrubber.log
-          - /var/log/ceilometer/ceilometer-agent-central.log
-          - /var/log/ceilometer/ceilometer-alarm-notifier.log
-          - /var/log/ceilometer/ceilometer-api.log
-          - /var/log/ceilometer/ceilometer-alarm-evaluator.log
-          - /var/log/ceilometer/ceilometer-collector.log
-          - /var/log/heat/heat.log
-          - /var/log/neutron/neutron-server.log
-          - /var/log/httpd/access_log
-          - /var/log/httpd/error_log
-          - /var/log/httpd/horizon_access_log
-          - /var/log/httpd/horizon_error_log
-        input_type: log
-  output:
-    logstash:
-      hosts:
-        - localhost.localdomain:5044
-  logging:
-    file:
-      rotateeverybytes: 10485760
+  - include: controller.yml
+    when: "'controller' in group_names"
 
-# The installation state of the filebeat package, passed to the appropriate
-# packaging module (yum/apt) as the 'state'.
-# Set to 'latest' to upgrade.
-filebeat_package_state: present
+  - include: compute.yml
+    when: "'compute' in group_names"
